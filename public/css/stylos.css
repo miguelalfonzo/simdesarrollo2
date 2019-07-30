@@ -1,0 +1,182 @@
+.div-icons-solicituds
+{
+    text-align: center;
+}
+
+.div-icons-solicituds a
+{
+    font-size: 1.25em;
+    padding-left: .75em;
+}
+.div-icons-solicituds a:first-child
+{
+    padding-left: 0.2em;
+}
+
+ul{
+  list-style-type: none;
+
+}
+a{
+    text-decoration: none;
+}
+ul li{
+    padding: 0;
+}
+#inputclient{
+
+    margin-bottom: 10px;
+}
+selectproduct{
+    margin-bottom: -13px;
+
+}
+#btn-add-client{
+
+    margin-left: 16px;
+    margin-top: -20px;
+}
+#btn-add-family{
+    margin-left: 16px;
+    margin-top: -10px;
+
+}
+.nueva_solicitud{
+
+    margin-top: 50px;
+
+}
+.clients_repeat{
+ margin-top: -10px;
+    margin-bottom: 15PX;
+}
+.btn-delete-family
+{
+    color: rgb(185, 33, 33);
+    font-size: 16px;
+    height: 33px;
+    position: absolute;
+    right: -1.5em;
+    top: 1px;
+    min-width: 25px;
+    border: 0;
+    background: 0;
+}
+
+.btn-remove-family
+{
+    color: rgb(185, 33, 33);
+    font-size: 16px;
+    height: 33px;
+    min-width: 25px;
+    background: 0;
+}
+.btn-delete-client
+{
+    color: rgb(185, 33, 33);
+ 
+}
+#loading
+{
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+
+    opacity: 1.4;
+}
+@media screen and (max-width: 780px){
+
+    .button-new-solicitude{
+        text-align: left !important;
+    }
+    .div-icons-solicituds span{
+        font-size: 1.1em !important;
+    }
+    .div-icons-solicituds {
+        width: 100px;
+    }
+
+}
+@media screen and (min-width: 780px){
+    .edition{
+        width: 112px;
+    }
+}
+
+.input-placeholder-error::-webkit-input-placeholder { /* WebKit browsers */
+    color:    red !important;
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+#loading{
+
+    opacity: 0.5;
+
+}
+#table_solicitude_ager_wrapper{
+    margin-top: 15px;
+}
+.active-link {
+    cursor: default !important; /* mantiene la flecha, sin que aparezca la manito. */
+    pointer-events: none; /* evita que el enlace nos envíe a donde apunta.*/
+}
+
+@import url(http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css);
+.fa-fw {width: 2em;}
+
+.edit-repr {
+    color: green;
+    position: absolute;
+    right: 1.75em;
+    top: 2.25em;
+}
+
+.pencil-seeker {
+    color: green;
+    position: absolute;
+    right: 1.75em;
+    top: 2.25em;
+    padding-top:1%;
+    display: none;
+}
+
+#table_solicitude_fondos_wrapper{
+    margin-top: 50px;
+}
+.table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > th {
+    background-color: #E2E2E2;
+}
+@media screen and (max-width: 480px){
+    .closed-session
+    {
+        display: none;
+    }
+    .off::after
+     {
+         content: "Off";
+     }
+
+}
+

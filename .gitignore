@@ -1,0 +1,14 @@
+/bd/*
+/bootstrap/compiled.php
+/public/uploads/*
+/public/files/*
+/vendor/*
+.idea/*
+.iml
+composer.phar
+composer.lock
+.env.*.php
+.env.php
+.DS_Store
+.codeintel
+Thumbs.db

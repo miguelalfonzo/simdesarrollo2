@@ -1,0 +1,1 @@
+<h1 style="color: red">Session Terminada - Por favor recarge la pagina</h1>

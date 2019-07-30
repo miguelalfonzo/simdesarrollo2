@@ -1,0 +1,171 @@
+.stage {
+	display: inline-block;
+	min-height: 112px;
+	position: relative;
+	text-align: center;
+}
+
+.stage-container {
+	padding: 15px 0px 4px;
+}
+
+.stage-content {
+	margin: 0 auto;
+	max-height: 52px;
+	/*padding-left: 17px;*/
+	width: 153px;
+}
+
+.stage-header {
+	-webkit-border-radius: 50%;
+	background-color: #eaeaea;
+	border-radius: 50%;
+	border: 1px solid #d9d9d9;
+	color: #a9a9a9;
+	display: inline-block;
+	font-size: 20px;
+	position: relative;
+	text-align: center;
+	width: 25px;
+	height: 25px;
+	z-index: 1;
+}
+
+.stage-title {
+	margin: 0;
+	color: #464646;
+	font: 400 14px 'calibriregular', sans-serif;
+	padding-left: 0px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.stage-info {
+	color: #a8a8a8;
+	font-family: 'calibriregular', sans-serif;
+	font-size: 11px;
+	line-height: 1.4;
+	text-align: center;
+}
+
+#tmm-form-wizard .stage.tmm-current:after, #tmm-form-wizard .stage.tmm-current:before{
+	background-color: #fb6b5b;
+	border: none;
+}
+
+.stage:before {
+	background-color: #eaeaea;
+	border-bottom: 1px solid #d9d9d9;
+	border-top: 1px solid #d9d9d9;
+	content: '';
+	height: 5px;
+	left: 0;
+	margin-top: -39px;
+	position: absolute;
+	top: 45%;
+	width: 50%;
+}
+
+.stage:after {
+	background-color: #eaeaea;
+	border-bottom: 1px solid #d9d9d9;
+	border-top: 1px solid #d9d9d9;
+	content: '';
+	height: 5px;
+	margin-top: -39px;
+	position: absolute;
+	right: 0;
+	top: 45%;
+	width: 50%;
+}
+
+.stage:first-child:before{
+ 	display: none;
+}
+
+.stage:last-child:after{
+ 	display: none;
+}
+
+.stage-pending{
+	background-color: #f0ad4e;
+	border: 1px solid #f0ad4e;	
+}
+
+.stage-rejected{
+	background-color: #ac2925;
+	border: 1px solid #ac2925;	
+}
+
+.stage-success{
+	background-color: #4cae4c;
+	border: 1px solid #4cae4c;
+}
+
+.pending:after, .pending:before{
+	background-color: #f0ad4e;
+	border-bottom: 1px solid #f0ad4e;
+	border-top: 1px solid #f0ad4e;
+}
+
+.rejected:before, .rejected:after{
+	background-color: #ac2925;
+	border-bottom: 1px solid #ac2925;
+	border-top: 1px solid #ac2925;
+}
+
+.success:after, .success:before{
+	background-color: #4cae4c;
+	border-bottom: 1px solid #4cae4c;
+	border-top: 1px solid #4cae4c;
+}
+
+
+
+@font-face {
+	font-family: 'icomoon';
+	src:url('https://i.icomoon.io/public/temp/87ab240569/UntitledProject/icomoon.eot?bxatm2');
+	src:url('https://i.icomoon.io/public/temp/87ab240569/UntitledProject/icomoon.eot?#iefixbxatm2') format('embedded-opentype'),
+	url('https://i.icomoon.io/public/temp/87ab240569/UntitledProject/icomoon.ttf?bxatm2') format('truetype'),
+	url('https://i.icomoon.io/public/temp/87ab240569/UntitledProject/icomoon.woff?bxatm2') format('woff'),
+	url('https://i.icomoon.io/public/temp/87ab240569/UntitledProject/icomoon.svg?bxatm2#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-thumbs-up:before {
+	content: "\e600";
+}
+.icon-like:before {
+	content: "\e601";
+}
+
+.time-estimated {
+	position: absolute;
+	top: -15px;
+	left: 0;
+	width: 50px;
+	margin-left: -25px;
+}
+
+.time-history-duration{
+	position: absolute;
+	top: 20px;
+	left: 0;
+	width: 60px;
+	margin-left: -30px;
+}
