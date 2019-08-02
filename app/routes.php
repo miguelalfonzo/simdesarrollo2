@@ -247,8 +247,11 @@
         Route::post( 'edit-expense', 'Expense\ExpenseController@editExpense');
         Route::post( 'delete-expense', 'Expense\ExpenseController@deleteExpense');
         Route::post( 'register-expense', 'Expense\ExpenseController@registerExpense');
+        Route::post( 'vistoBueno-Documento', 'Expense\ExpenseController@vistoBuenoDocumento');
+        Route::post( 'documento-Recibido', 'Expense\ExpenseController@documentoRecibido');
         Route::get( 'a/{token}', 'Expense\ExpenseController@reportExpense');
         Route::get( 'report-fondo/{token}','Expense\ExpenseController@reportExpenseFondo');
+        Route::post( 'buscar-imagenes', 'Expense\ExpenseController@buscarImagenes');
     });
 
     Route::group( array( 'before' => 'rm_sup_gerprod_ager' ), function ()

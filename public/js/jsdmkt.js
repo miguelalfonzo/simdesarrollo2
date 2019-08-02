@@ -1900,7 +1900,7 @@ $('#btn-add-family-fondo').on('click', function() {
         }).fail(function(statusCode, errorThrown) {
             ajaxError(statusCode, errorThrown);
             console.log(errorThrown);
-        }).done(function(response){
+        }).done(function(response) {
 
             console.log(response);
             spin.stop();
@@ -1908,9 +1908,9 @@ $('#btn-add-family-fondo').on('click', function() {
                 var options_val = '<option selected="" disabled="" value="0">Seleccione el Fondo</option>';
                 $.each(response.Data, function(i, val) {
                     // options_val += '<option value=" ' + val.id + ',' + val.tipo + '">' + val.marca.descripcion + ' | ' + val.sub_categoria.categoria.descripcion + ' | ' + val.sub_categoria.descripcion + ' S/.' + (val.saldo - val.retencion) + '</option>';
-                    options_val += '<option value=" ' + val.ID + ',' + val.TIPO + '">' + 
-                    val.MARCA + ' | ' + val.CATEGORIA + 
-                    ' | ' + val.SUBCATEGORIA + ' S/.' + val.SALDO + '</option>';
+                    options_val += '<option value=" ' + val.ID + ',' + val.TIPO + '">' +
+                        val.MARCA + ' | ' + val.CATEGORIA +
+                        ' | ' + val.SUBCATEGORIA + ' S/.' + val.SALDO + '</option>';
                 });
 
                 $("#list-product2").append('<li class="list-group-item"><div class="input-group input-group-sm"><span class="input-group-addon" style="width:15%;">' +

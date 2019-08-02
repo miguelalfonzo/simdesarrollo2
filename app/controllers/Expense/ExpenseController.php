@@ -29,6 +29,9 @@ use \Users\Visitador;
 use \Fondo\FondoMkt;
 use \Devolution\DevolutionController;
 use \Parameter\Parameter;
+use Mail;
+
+use Illuminate\Database\Eloquent\Collection;
 
 class ExpenseController extends BaseController
 {
@@ -56,6 +59,150 @@ class ExpenseController extends BaseController
     	}
     	return $this->setRpta();
     }
+
+    // Actualizar visto bueno documento.
+	public function vistoBuenoDocumento()
+	{
+		try
+		{
+			$idGasto    = $_POST['id'];
+			$vistoBueno = $_POST['vistoBueno'];
+			$comentario = $_POST['comentario'];
+			$appDire 	= $_POST['appDire'];
+			$usuario	= Auth::user()->username;
+			$idUsuario	= Auth::user()->id;
+
+			$conn = $this->Conexion();
+			$stmt = oci_parse($conn, 'BEGIN SP_VISTO_BUENO_DOC(:idGasto,:vistoBueno,:usuario,:comentario,:O_RESULT); END;');     // Preparar la sentencia
+		    oci_bind_by_name($stmt, ':idGasto', $idGasto);
+		    oci_bind_by_name($stmt, ':vistoBueno', $vistoBueno);
+		    oci_bind_by_name($stmt, ':usuario', $usuario);
+		    oci_bind_by_name($stmt, ':comentario', $comentario);
+		    oci_bind_by_name($stmt, ':O_RESULT', $idResultado);
+
+	    	oci_execute( $stmt );           // Ejecutar la sentencia
+		    
+
+			// Busco Nombre del Supervisor.
+			$resp       = $this->buscaDatosSupervisorRepresentante($idGasto);
+			$resp       = explode('|', $resp);
+			$NOMBRE_SUP = $resp[0];
+			$EMAIL_SUP  = $resp[1];
+			$NOMBRE_REP = $resp[2];
+			$EMAIL_REP  = $resp[3];
+
+		    if ($vistoBueno == '1'){ // SI ES APROBADO EL DOCUMENTO.
+				$VB = 'Aprobado';
+				$parrafo = 'Le informamos que el departamento de Contabilidad a dado el Visto Bueno al siguiente documento de gasto:';
+				$correoDestinatario = array($EMAIL_SUP,$EMAIL_REP);;
+				$encabezado= '<strong>Estimado Usuario :&nbsp;</strong>.'.$NOMBRE_SUP.' / '.$NOMBRE_REP;
+			}else{ // SI ES RECHAZADO EL DOCUMENTO.
+				$VB = 'Rechazado';
+				$parrafo = 'Le informamos que el departamento de Contabilidad a rechazado el Visto Bueno al siguiente documento de gasto:';
+				$correoDestinatario = array($EMAIL_SUP,$EMAIL_REP);
+				$encabezado= '<strong>Estimado Usuario :&nbsp;</strong>.'.$NOMBRE_SUP.' / '.$NOMBRE_REP;
+			}
+	    	// Busca el Gasto y envía Correo.
+	    	$resp = $this->buscaGastoSendEmail($idGasto,$conn,$vistoBueno,$comentario,$NOMBRE_SUP,$NOMBRE_SUP,$VB,$parrafo,$correoDestinatario,$encabezado,$appDire);	
+
+			return;
+
+		}
+		catch( Oci8Exception $e )
+		{
+			DB::rollback();
+			return $this->internalException( $e , __FUNCTION__ , DB );
+		}
+		catch( Exception $e )
+		{
+			DB::rollback();
+			return $this->internalException( $e , __FUNCTION__ );
+		}
+	}
+
+	public function buscaDatosSupervisorRepresentante($idGasto){
+			$conn = $this->Conexion();
+	        $cursor = oci_new_cursor($conn);
+	        $stmt = oci_parse($conn, 'BEGIN SP_BUSCA_EMAIL_SUP_REP(:idGasto, :data); END;');     // Preparar la sentencia
+	        oci_bind_by_name($stmt, ':idGasto', $idGasto);
+	        oci_bind_by_name($stmt, ':data', $cursor, -1, OCI_B_CURSOR);
+	        oci_execute( $stmt );           // Ejecutar la sentencia
+	        oci_execute($cursor);
+	        $row = oci_fetch_array($cursor);
+
+			$NOMBRE_SUP = $row['NOMBRE_SUP'];
+			$EMAIL_SUP  = $row['EMAIL_SUP'];
+			$NOMBRE_REP = $row['NOMBRE_REP'];
+			$EMAIL_REP  = $row['EMAIL_REP'];
+	        oci_free_statement($stmt);  // Liberar los recursos asociados a una sentencia o cursor.
+	        oci_close($conn); // Cierra Conexion.
+
+	        return $NOMBRE_SUP.'|'.$EMAIL_SUP.'|'.$NOMBRE_REP.'|'.$EMAIL_REP;
+	}
+
+	public function buscaGastoSendEmail($idGasto,$conn,$vistoBueno,$comentario,$NOMBRES,$APELLIDOS,$VB,$parrafo,$correoDestinatario,$encabezado,$appDire){
+			$cursor = oci_new_cursor($conn);
+	        $stmt = oci_parse($conn, 'BEGIN SP_LISTAR_GASTO(:idGASTO, :data); END;');     // Preparar la sentencia
+	        oci_bind_by_name($stmt, ':idGASTO', $idGasto);
+	        oci_bind_by_name($stmt, ':data', $cursor, -1, OCI_B_CURSOR);
+	        oci_execute( $stmt );           // Ejecutar la sentencia
+	        oci_execute($cursor);
+	        $row = oci_fetch_array($cursor);
+
+			$gastos             = new Collection($row);
+			$subject            = 'Información sobre gasto del documento ';
+			
+			$data = array( 'gastos' => $gastos );
+
+			$data['gastos']['nombreRep']  = $row['NOMBRES'].' '.$row['APELLIDOS'];
+			$data['gastos']['nombreSup']  = $NOMBRES;
+			$data['gastos']['encabezado'] = $encabezado;
+			$data['gastos']['parrafo']    = $parrafo;
+			$data['gastos']['comentario'] = $comentario;
+
+	        Mail::send('emails.rendicionGastos', $data, function ($message) use ($correoDestinatario,$subject){
+			    $message->to( $correoDestinatario )->subject( $subject );
+			});                                 
+
+	        oci_free_statement($stmt);  // Liberar los recursos asociados a una sentencia o cursor.
+	        oci_close($conn); // Cierra Conexion.	        
+	}
+
+	// Actualizar documento recibido.
+	public function documentoRecibido()
+	{
+		try
+		{
+			$idGasto    = $_POST['id'];
+			$vistoBueno = $_POST['vistoBueno'];
+			$usuario	= Auth::user()->username;
+
+			$conn = $this->Conexion();
+			$stmt = oci_parse($conn, 'BEGIN SP_DOCUMENTO_RECIBIDO(:idGasto,:vistoBueno,:usuario,:O_RESULT); END;');     // Preparar la sentencia
+		    oci_bind_by_name($stmt, ':idGasto', $idGasto);
+		    oci_bind_by_name($stmt, ':vistoBueno', $vistoBueno);
+		    oci_bind_by_name($stmt, ':usuario', $usuario);
+		    oci_bind_by_name($stmt, ':O_RESULT', $idResultado);
+
+	    	oci_execute( $stmt );           // Ejecutar la sentencia
+		    
+		    oci_free_statement($stmt);	// Liberar los recursos asociados a una sentencia o cursor.
+			oci_close($conn); // Cierra Conexion.	
+
+			return;
+
+		}
+		catch( Oci8Exception $e )
+		{
+			DB::rollback();
+			return $this->internalException( $e , __FUNCTION__ , DB );
+		}
+		catch( Exception $e )
+		{
+			DB::rollback();
+			return $this->internalException( $e , __FUNCTION__ );
+		}
+	}
 
     private function validateInputExpense( $inputs )
     {
@@ -111,6 +258,61 @@ class ExpenseController extends BaseController
 	    	    return $this->setRpta();
         } 
     }
+
+    
+    private function Conexion(){
+        $usuario = "SIMP";
+        $pass = "SIMP";
+        $cadenaconexion = "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=10.51.1.4)(PORT=1521)( charset='utf8')))(CONNECT_DATA=(SID=BDBAGO)))";                     
+        $conn = oci_connect($usuario, $pass, $cadenaconexion) or die ( "Error al conectar : ".oci_error() );
+        return $conn;
+    }
+
+    public function buscarImagenes()
+	{
+		 try
+		{
+
+			$idGasto = $_POST['id'];
+
+			$conn = $this->Conexion();
+        
+        	$cursor = oci_new_cursor($conn);
+        	$stmt = oci_parse($conn, 'BEGIN SP_BUSCA_IMAGENES_GASTOS(:idGasto, :data); END;');     // Preparar la sentencia
+        	oci_bind_by_name($stmt, ':idGasto', $idGasto);
+        	oci_bind_by_name($stmt, ':data', $cursor, -1, OCI_B_CURSOR);
+        	oci_execute( $stmt );           // Ejecutar la sentencia
+        	oci_execute($cursor);
+        	$json = '';
+        	$i = 0;
+	        while (($row = oci_fetch_array($cursor)) != false)
+	        {
+	            $json[$i] = array(  'ID'           => $row['ID'],
+	                            'EXTENSION'    => $row['EXTENSION'],
+	                            'DIRECTORY'    => $row['DIRECTORY'],
+	                            'DOCUMENT_ID'  => $row['DOCUMENT_ID']                                          
+	                          );  
+	            $i += 1;      
+	   
+	        }
+        
+	        oci_free_statement($stmt);  // Liberar los recursos asociados a una sentencia o cursor.
+	        oci_close($conn); // Cierra Conexion.
+	        echo json_encode($json);
+	        return;
+
+		}
+		catch( Oci8Exception $e )
+		{
+			DB::rollback();
+			return $this->internalException( $e , __FUNCTION__ , DB );
+		}
+		catch( Exception $e )
+		{
+			DB::rollback();
+			return $this->internalException( $e , __FUNCTION__ );
+		}
+	}
 
 	public function registerExpense()
 	{

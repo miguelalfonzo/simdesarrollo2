@@ -57,8 +57,13 @@
         {{ HTML::style('css/semantic.min.css') }}
         {{ HTML::style('css/bootstrap.alertify.min.css') }}
         {{ HTML::script('js/alertify.min.js') }}
+        {{ HTML::style('css/stylo_cayro.css') }}
 
     </head>
+    <style type="text/css">
+        .zoomContainer{ z-index: 9999;}
+         .zoomWindow{ z-index: 9999;}
+    </style>
     <body>
         <div id="alert-console" class="container-fluid" style="z-index: 99999999; margin-top: 10px;"></div>
         <header>
@@ -243,7 +248,8 @@
         {{ HTML::script('js/moment.js') }}
         {{ HTML::script('js/moment.locale.es.js') }}
         {{ HTML::script('js/select2.js') }}
-        
+        {{ HTML::script('js/jquery.elevatezoom.js') }}
+        {{ HTML::script('js/sweetalert2.all.min.js') }}
 
         <script type="text/javascript">
             URL_BASE = '{{ asset( '/' ) }}';

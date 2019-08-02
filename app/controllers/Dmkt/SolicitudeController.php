@@ -65,7 +65,6 @@ class SolicitudeController extends BaseController
     // }
 
     /** ----------------------------------  Representante Medico ---------------------------------- */
-
     public function showUser()
     {
         if( Session::has( 'state' ) )
@@ -1701,6 +1700,7 @@ class SolicitudeController extends BaseController
         {
             $solicitud = Solicitud::find( $solicitudId );
             $middleRpta = $this->verifyPolicy( $solicitud , $inputs[ 'monto' ] );
+
             if( $middleRpta[ status ] === ok )
             {
                 $state = $middleRpta[ data ];
@@ -1714,8 +1714,10 @@ class SolicitudeController extends BaseController
                     $middleRpta = $this->validateRegularization( $solicitud->id_user_assign );
                     if( $middleRpta[ status ] === ok )
                     {
+
                         #$middleRpta = $this->acceptedSolicitudTransaction( $solicitudId , $state , $inputs );
                         $middleRpta = $this->acceptedSolicitudTransactionNew( $solicitudId , $state , $inputs );
+
                     }
                 }
             }
@@ -1989,6 +1991,7 @@ class SolicitudeController extends BaseController
             $familiesId = $solicitud->products->lists( 'id_producto' );
           
             $middleRpta = $this->toUserNew( $solicitud->investment->approvalInstance , $familiesId , $solicitud->histories->count() + 1 );
+
             if ( $middleRpta[ status] != ok )
             {
                 return $middleRpta;
@@ -2009,6 +2012,7 @@ class SolicitudeController extends BaseController
         }
 
         $middleRpta = $this->setStatus( $oldIdEstado, $idEstado , Auth::user()->id , $toUser , $solicitud->id );
+        
         if ( $middleRpta[status] == ok ) 
         {   
             Session::put( 'state' , $solicitud->state->rangeState->id );
@@ -2494,7 +2498,9 @@ class SolicitudeController extends BaseController
 
     private function validateRegularization( $user_id )
     {
-        $response = DB::select( 'SELECT VERIFICAR_REGULARIZACION_FN( :user_id ) rpta from dual' , [ 'user_id' => $user_id ] )[ 0 ];
+
+        $response = DB::select( 'SELECT VERIFICAR_REGULARIZACION_FN(:user_id) rpta from dual' , [ 'user_id' => $user_id ] )[ 0 ];
+
         if( $response->rpta === ok )
         {
             return $this->setRpta();
@@ -2502,6 +2508,7 @@ class SolicitudeController extends BaseController
         else
         {
             $rpta = explode( '|' , $response->rpta  );
+
             if( $rpta[ 0 ] === warning )
             {
                 return $this->warningException( $rpta[ 1 ] , __FUNCTION__ , __LINE__ , __FILE__ );

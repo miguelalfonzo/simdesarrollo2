@@ -166,6 +166,7 @@ class FondoMkt extends BaseController
             elseif ( $fondoType == GER_PROD )
             {
                 $fondo = FondoGerProd::find( $idFondo );
+                var_dump($fondo);
                 if ( $fondo->{ 'saldo' . $tipo } < 0 )
                 {
                     return $this->warningException( 'El Fondo ' . $fondo->full_name . ' solo cuenta con S/.' . ( $fondo->{ 'saldo' . $tipo } + $fondoMonto ) . 
@@ -180,10 +181,13 @@ class FondoMkt extends BaseController
             {
                 foreach( $sups as $supId => $amount )
                 {
+
                     $fondoSup = FondoSupervisor::totalAmount( $subCategoryId , $supId );
                     $fondoSubCategory = FondoSubCategoria::find( $subCategoryId );
+
                     if( $fondoSup->{ 'saldo' . $tipo } < 0 )
                     {
+                        
                         return $this->warningException( 'El Fondo ' . $fondoSubCategory->descripcion . ' solo cuenta con S/.' . ( $fondoSup->{ 'saldo' . $tipo } + $amount ) . 
                                                     $msg . $amount . ' en total' , __FUNCTION__ , __LINE__ , __FILE__ );
                     }
