@@ -44,6 +44,7 @@ use \VisitZone\Zone;
 use \Seat\Generate;
 use \Redirect;
 use \Carbon\Carbon;
+use Mail;
 
 use Illuminate\Database\Eloquent\Collection;
 
@@ -371,12 +372,128 @@ class SolicitudeController extends BaseController
     //         return $this->internalException( $e , __FUNCTION__ );
     //     }
     // }
+ 
+    public function vistaEmailAprobacion($token,$user_to_id=66)
+    {
+        try
+        {
+
+            $solicitud     = Solicitud::where( 'token' , $token )->first();
+
+            if( is_null( $solicitud ) )
+            {
+                return $this->warningException( 'La solicitud no existe' , __FUNCTION__ , __LINE__ , __FILE__ );
+            }
+
+            $politicStatus = FALSE;
+            if( $solicitud->idtiposolicitud == REEMBOLSO )
+            {
+                $regularizationStatus = $this->setRpta();
+            }
+            else
+            {
+                $regularizationStatus = $this->validateRegularization( $solicitud->id_user_assign );
+            }
+
+            $user          = Auth::user();
+            if ( is_null( $solicitud ) )
+            {
+                return $this->warningException('No se encontro la Solicitud con Token: ' . $token, __FUNCTION__, __LINE__, __FILE__);
+            }
+            $detalle = $solicitud->detalle;
+            #include( app_path() . '/models/Query/QueryProducts.php' );
+            $data = array( 
+                'solicitud' => $solicitud , 
+                'detalle' => $detalle );
+
+            if ( $solicitud->idtiposolicitud != SOL_INST && in_array( $solicitud->id_estado, array( PENDIENTE , DERIVADO , ACEPTADO ) ) ) 
+            {
+
+               $politicTypes = Solicitud::get_tipo_user($solicitud->id);
+
+               foreach($politicTypes as $list){
+               $politicType = $list['TIPO_USUARIO'];
+               }
+
+                if( in_array( $politicType , array( Auth::user()->type , Auth::user()->tempType() ) ) && 
+                    ( array_intersect( array( Auth::user()->id, Auth::user()->tempId() ), $solicitud->managerEdit( $politicType )->lists( 'id_gerprod' ) ) ) ) 
+                {
+
+                    $politicStatus = TRUE;
+                    $data[ 'payments' ] = TypePayment::all();
+                    #$data[ 'families' ] = $qryProducts->get();
+                    $data[ 'families' ] = $this->listarProductos();
+                    #$data[ 'reps' ] = Personal::getResponsible();
+                    $data[ 'reps' ] = Personal::getResponsibleFN();    
+                    $data[ 'tipo_usuario' ] = $politicType;
+                    $solicitud->status = BLOCKED;
+                    Session::put( 'id_solicitud' , $solicitud->id );
+                    $solicitud->save();
+                    $data[ 'solicitud' ]->status = 1;
+                }
+            } 
+            elseif ( Auth::user()->type == TESORERIA && $solicitud->id_estado == DEPOSITO_HABILITADO ) 
+            {
+                $data['banks'] = Account::banksSP();
+                $data['deposito'] = $detalle->monto_aprobado;
+            } 
+            elseif ( Auth::user()->type == CONT ) 
+            {
+                $data['date'] = $this->getDay();
+                if ($solicitud->id_estado == DEPOSITADO )
+                {
+                    $entryController   = new Generate;
+                    $data[ 'entries' ] = $entryController->generateDepositEntryData( $solicitud );
+                }
+                elseif ( ! is_null( $solicitud->toDeliveredHistory ) )
+                {
+                    $this->setExpenseData( $solicitud , $detalle , $data );
+                }
+            } 
+            elseif ( ! is_null( $solicitud->expenseHistory ) && $user->id == $solicitud->id_user_assign ) 
+            {
+                $this->setExpenseData( $solicitud , $detalle , $data );
+                $event = Event::where( 'solicitud_id', $solicitud->id )->get();
+                if ( $event->count() !== 0 )
+                {
+                    $data['event'] = $event[ 0 ];
+                }
+            }
+            Session::put( 'state' , $data[ 'solicitud' ]->state->id_estado );
+            $data[ 'politicStatus' ] = $politicStatus;
+            $data[ 'regularizationStatus' ] = $regularizationStatus;
+
+            if ( is_array( $user_to_id ) )
+                $toUser     = User::whereIn( 'id' , $user_to_id )->get();
+            else
+                $toUser     = User::where( 'id' , $user_to_id )->get();
+            
+            $correoDestinatario = array();
+            $i=0;
+            foreach ($toUser as $user) {
+                $correoDestinatario[$i++] = $user->email;
+            }
+
+            $subject = 'Solicitud para su aprobación.';
+
+            // Mail::send('emails.emailAprobaciones', $data, function ($message) use ($correoDestinatario,$subject){
+            //     $message->to( $correoDestinatario )->subject( $subject );
+            // });
+            return View::make('emails.emailAprobaciones', $data);
+           
+        } 
+        catch (Exception $e) 
+        {
+            return $this->internalException( $e, __FUNCTION__ );
+        }
+    }
 
     public function viewSolicitude($token)
     {
         try
         {
             $solicitud     = Solicitud::where( 'token' , $token )->first();
+;
             if( is_null( $solicitud ) )
             {
                 return $this->warningException( 'La solicitud no existe' , __FUNCTION__ , __LINE__ , __FILE__ );
@@ -1012,14 +1129,13 @@ class SolicitudeController extends BaseController
      
                     $respuesta =$this->guardarSolicitud($solicitudId,$solicitudXml,$solicitudClientesXml,$solicitudProductosXml,$solicitudGerentesProductosXml);
 
-                    
-
                     $middleRpta = $this->setGerentesetRptaCayro($dataIdUser , $solicitudXX, $dataTipoUsuario, $responsible);
                  
                     if ( (int)$respuesta > 0 ){
-                        $middleRpta = $this->setStatus(0, PENDIENTE, Auth::user()->id, $dataIdUser, $respuesta);
-              
-                            Session::put('state', R_PENDIENTE);
+                        $middleRpta = $this->setStatus(0, PENDIENTE, Auth::user()->id, $dataIdUser, $respuesta);   
+                        $this->vistaEmailAprobacion($tokensss,$dataIdUser);
+
+                        Session::put('state', R_PENDIENTE);
  
                     }
                
@@ -1854,6 +1970,7 @@ class SolicitudeController extends BaseController
 
     private function acceptedSolicitudTransactionNew( $solicitudId , $state , $inputs )
     {                   
+
         DB::beginTransaction();
         $userId = Auth::user()->id;
         $solicitud = Solicitud::find( $solicitudId );        
@@ -1950,10 +2067,8 @@ class SolicitudeController extends BaseController
             if ( $inputs[ 'modificacion_clientes' ] == 1 )
             {   
 
-
                 $solicitud->clients()->delete();
                 $middleRpta = $this->setClients( $solicitud->id, $inputs['clientes'], $inputs['tipos_cliente']);
-
 
             }
             //VALIDAR SI SE MODIFICARAN LOS PRODUCTOS

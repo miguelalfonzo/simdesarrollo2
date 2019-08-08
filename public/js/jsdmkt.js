@@ -142,7 +142,6 @@ ruc.numeric({
     decimal: false
 });
 
-
 investment.on('change', function() {
     $("#actividad").valid();
     $("#inversion").valid();
@@ -748,21 +747,52 @@ function registerFondoInstitucional() {
 
 $('#search_responsable').on('click', function(e) {
     var spin = Ladda.create(this);
-    spin.start();
-    var div_monto = $('label[for=monto]').parent();
-    if (div_monto.hasClass('has-success')) {
-        acceptedSolicitude(spin);
-    } else {
-        spin.stop();
-        return false;
-    }
+
+    alertify.confirm('<i class="fab fa-wpforms"></i> Solicitud', '<h4 class="text-danger">Esta seguro de Aceptar esta Solicitud..?</h4>', function() {
+
+        spin.start();
+        var div_monto = $('label[for=monto]').parent();
+        if (div_monto.hasClass('has-success')) {
+            acceptedSolicitude(spin);
+        } else {
+            spin.stop();
+            return false;
+        }
+
+    }, function() { // En caso de Cancelar              
+        alertify.error('Se Cancelo el Proceso para Aceptar esta Solicitud.');
+    }).set('labels', {
+        ok: '<i class="fas fa-check"></i> Confirmar',
+        cancel: '<i class="far fa-window-close"></i> Cancelar'
+    }).set({
+        transition: 'zoom'
+    }).set({
+        modal: true,
+        closableByDimmer: false
+    });
+
 });
 
 
 $('#derivar_solicitud').on('click', function() {
     var spin = Ladda.create(this);
-    spin.start();
-    acceptedSolicitude(spin, 'derivacion');
+
+    alertify.confirm('<i class="fab fa-wpforms"></i> Solicitud', '<h4 class="text-danger">Esta seguro de Derivar esta Solicitud..?</h4>', function() {
+
+        spin.start();
+        acceptedSolicitude(spin, 'derivacion');
+
+    }, function() { // En caso de Cancelar              
+        alertify.error('Se Cancelo el Proceso para Derivar esta Solicitud.');
+    }).set('labels', {
+        ok: '<i class="fas fa-check"></i> Confirmar',
+        cancel: '<i class="far fa-window-close"></i> Cancelar'
+    }).set({
+        transition: 'zoom'
+    }).set({
+        modal: true,
+        closableByDimmer: false
+    });
 });
 
 
@@ -912,6 +942,13 @@ $(document).on('show.bs.modal', '#myModal', function(e) {
 $(document).off("click", ".elementCancel");
 $(document).on("click", ".elementCancel", function() {
     listDocumentsType();
+});
+
+$('#approval-product-modal').on('show.bs.modal', function() {
+    $('.chosen-select', this).chosen('destroy').chosen({
+        width: '100%',
+        disable_search_threshold: 10
+    });
 });
 
 $(document).off("click", ".elementEdit");
@@ -1917,7 +1954,7 @@ $('#btn-add-family-fondo').on('click', function() {
                     $("#selectfamilyadd option:selected").text() + '</span><select name="fondo_producto[]" class="selectpicker form-control">' +
                     options_val + '</select><span class="input-group-addon">' + $('#type-money').html().trim() + '</span>' +
                     '<input name="monto_producto[]" type="text" class="form-control text-right amount_families2" value="0" style="padding:0px;text-align:center">' +
-                    '<span class="input-group-btn"><button type="button" class="btn btn-default btn-remove-family"><span class="glyphicon glyphicon-remove"></span></button></span></div>' +
+                    '<span class="input-group-btn"><button type="button" class="btn btn-default btn-remove-family"><i class="far fa-trash-alt"></i></button></span></div>' +
                     '<input type="hidden" name="producto[]" class="producto_value" value="' + family_id + '"></li>');
 
                 $(".btn-remove-family").bind("click", function() {

@@ -220,7 +220,7 @@
 					<section class="row reg-expense detail-expense" style="margin:0">
 						<div class="col-xs-12 col-sm-12 col-md-12">
 							<div class="row">
-								<div class="col-xs-12 col-sm-6 col-md-3 tot-document" style="margin-top: -0.5em;">
+								<div class="col-xs-12 col-sm-6 col-md-3 tot-document" style="margin-top: -1.75em;">
 									<div class="form-expense">
 										<label>Sub Total</label>
 										<div class="input-group">

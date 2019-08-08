@@ -1176,9 +1176,8 @@ $(function() {
     });
 
     $('#expense-register').on('show.bs.modal', function() {
-
-        $("#regimen").chosen("destroy").chosen({
-            'width': '100%',
+        $('.chosen-select', this).chosen('destroy').chosen({
+            width: '100%',
             disable_search_threshold: 10
         });
     });

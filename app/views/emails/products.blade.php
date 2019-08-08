@@ -11,13 +11,6 @@
                 <div class="col-xs-8 col-sm-10 col-md-5">
                     <span id="amount_error_families"></span>
                 </div>
-                <div class="col-xs-4 col-sm-2 col-md-2">
-                    @if ( $politicStatus && isset( $tipo_usuario ) && in_array( $tipo_usuario , array( SUP , GER_PROD, GER_PROM , GER_COM , GER_GER  ) ) )
-                        <label class="pull-right">
-                            <input type="checkbox" name="modificacion-productos" id="is-product-change"> Modificar
-                        </label>
-                    @endif
-                </div>
             </div>
         </div>
         <ul class="list-group" id="list-product">
@@ -25,29 +18,9 @@
                 <li class="list-group-item">        
                     @if( $politicStatus )
                         <div class="input-group input-group-sm">
-                            <span class="input-group-addon" style="width:15%;">{{{ is_null( $product->marca ) ? '' : $product->marca->descripcion}}}</span>
+                            <span class="input-group-addon" style="width:65%;text-align: left;">{{{ is_null( $product->marca ) ? '' : $product->marca->descripcion}}}</span>
                             @if ( in_array( $tipo_usuario , array( SUP , GER_PROD , GER_PROM , GER_COM , GER_GER ) ) )
-                                <select name="fondo_producto[]" class="selectpicker form-control">
-                                    @if( is_null( $product->id_fondo_marketing ) )
-                                        <option selected disabled value="0">Seleccione el Fondo</option>
-                                        @foreach( $product->getSubFondo( $tipo_usuario , $solicitud ) as $fondoMkt )
-                                            <option value="{{ $fondoMkt->id . ',' . $fondoMkt->tipo }}">
-                                                {{ $fondoMkt->detail_name . ' S/.' . $fondoMkt->saldo_disponible }}
-                                            </option>
-                                        @endforeach
-                                    @else
-                                        <option value="{{ $product->id_fondo_marketing . ',' . $product->id_tipo_fondo_marketing }}" style="background-color:gold" selected>
-                                            {{ $product->thisSubFondo->approval_product_name . ' ( Reservado S/. ' . $product->monto_asignado_soles . ' ) ' }}
-                                        </option>    
-                                        @foreach( $product->getSubFondo( $tipo_usuario , $solicitud ) as $fondoMkt )
-                                            @if( $fondoMkt->id == $product->id_fondo_marketing )
-                                                <option value="{{ $fondoMkt->id . ',' . $fondoMkt->tipo }}" style="background-color:#00FFFF">{{ $fondoMkt->detail_name . ' S/.' . $fondoMkt->saldo_disponible }}</option>
-                                            @else   
-                                                <option value="{{ $fondoMkt->id . ',' . $fondoMkt->tipo }}">{{ $fondoMkt->detail_name . ' S/.' . $fondoMkt->saldo_disponible }}</option>
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </select>
+  
                             @else
                                 <span class="input-group-addon" style="max-width:350px;overflow:hidden">
                                     {{ $product->thisSubFondo->approval_product_name . ' ( Reservado S/. ' . $product->monto_asignado_soles . ' )' }}
@@ -56,7 +29,7 @@
                             @endif
                             <span class="input-group-addon">{{ $detalle->typemoney->simbolo }}</span>   
                             <input name="monto_producto[]" type="text" class="form-control text-right amount_families" value="{{ isset( $product->monto_asignado ) ? $product->monto_asignado : 
-                            round( $detalle->monto_actual / count( $solicitud->products ) , 2 )}}" style="padding:0px;text-align:center">   
+                            round( $detalle->monto_actual / count( $solicitud->products ) , 2 )}}" disabled style="padding:0px;text-align:center">   
                         </div>
                     @else
                         {{{ $product->marca->descripcion or '-' }}}

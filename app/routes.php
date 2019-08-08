@@ -257,6 +257,7 @@
     Route::group( array( 'before' => 'rm_sup_gerprod_ager' ), function ()
     {
         Route::get( 'nueva-solicitud', 'Dmkt\SolicitudeController@newSolicitude');
+        Route::get(  'vista-Email/{token}'       , 'Dmkt\SolicitudeController@vistaEmailAprobacion' );
         Route::get( 'get-investments-activities' , 'Dmkt\SolicitudeController@getInvestmentsActivities');
         Route::post( 'registrar-solicitud', 'Dmkt\SolicitudeController@registerSolicitud');
         Route::get( 'editar-solicitud/{id}', 'Dmkt\SolicitudeController@editSolicitud');
@@ -318,7 +319,7 @@
         Route::get(  'listar-solicitudes/{estado}' , 'Dmkt\SolicitudeController@listSolicitude' );
         Route::get(  'getclients'                  , 'Dmkt\SolicitudeController@getClients' );
         Route::post( 'list-account-state'          , 'Movements\MoveController@searchMove' );
-        Route::get(  'ver-solicitud/{token}'       , 'Dmkt\SolicitudeController@viewSolicitude' );
+        Route::get(  'ver-solicitud/{token}'       , 'Dmkt\SolicitudeController@viewSolicitude' );        
         Route::get(  'show-fondo/{token}'          , 'Expense\ExpenseController@showFondo' );
         Route::post( 'list-table'                  , 'Movements\MoveController@getTable' );
         Route::post( 'detail-solicitud'            , 'Movements\MoveController@getSolicitudDetail' );

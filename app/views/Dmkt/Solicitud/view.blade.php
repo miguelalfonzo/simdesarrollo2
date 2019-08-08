@@ -40,7 +40,8 @@
                     @endif
                 </div>
             @endif
-
+            <!-- Grupo de Botones -->
+            @include('Dmkt.Solicitud.Detail.buttons')
             <form id="form_make_activity" method="post">
                 {{Form::token()}}
                 <input name="idsolicitud" type="hidden" value="{{$solicitud->id}}">
@@ -67,7 +68,7 @@
             @include('Dmkt.Solicitud.Section.gasto')
         </div>
         <!-- Button (Double) -->
-        @include('Dmkt.Solicitud.Detail.buttons')
+        
     </div>
 </div>
 @stop

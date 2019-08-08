@@ -3,10 +3,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Productos xxx</h4>
+                <h4 class="modal-title">Productos...</h4>
             </div>
             <div class="modal-body">
-                <select id="selectfamilyadd"  class="form-control products">
+                <select id="selectfamilyadd"  class="chosen-select form-control products">
                     @if ( isset( $families ) )
                         @foreach( $families as $family )
                             <option value="{{$family['ID']}}">{{$family['DESCRIPCION']}}</option>

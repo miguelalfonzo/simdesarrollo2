@@ -106,6 +106,15 @@
                                             </li>
                                             <li role="separator" class="divider"></li>
                                         @endif
+                                        
+                                        <li>
+                                                <a href="{{URL::to('vista-Email/94ebf4fcb69efeb760d7d964a1387afac7bce637')}}">
+                                                    <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
+                                                    <span class="glyphicon-class"> Vista Email Aprobación</span>
+                                                </a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+
                                         <li><a href="{{ URL::to('show_user') }}">Listado de Solicitudes</a></li>
                                         @if ( Auth::user()->type == ASIS_GER )
                                             <li><a href="{{ URL::to('solicitude/institution') }}">Solicitudes Institucionales</a></li>
